@@ -14,7 +14,7 @@ In the src files, you can simply run, here python is python3
 ```
 python filename
 ```
-But you need to set your data path to the correct data path now.
+But you need to set your data path to the correct data path, you can download data [here](https://drive.google.com/drive/folders/0B4ORAVKduZjIWFh0V0piSEFzYmM?usp=sharing)
 
 For the c++ files, you have to run below to get it running. Again, you have to modify the data path in the main file.
 
