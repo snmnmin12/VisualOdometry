@@ -16,11 +16,12 @@ The **python** file folder contains the source code with Python scripts for 2D-2
 The dense 3D reconstruction is done with OpenCV function **cv2.StereoSGBM_create** to create the stereo image pair and then use this image pair to compute the disparity and then further calculate the depth because the two cameras are parallel with each other and the offset is provided by Kitti data set. Then it is easy to recover the 3D coordinate of all points in the disparity image.
 
 <!--<img src='img/1.png' width="40%">-->
-<img src='img/4.png' width="80%">
+<img src='img/4.png' width="60%">
 <!--![](img/4.png)-->
 
 For the 2D-2D visual mono odometry case, the scale between frame is very important since we only have images from one camera, and I choose to use the scale from the absolute pose data provided by Kitti data, the recovered pose is plotted
-<br><img src='img/map.png' width="80%"><br>
+
+<br><img src='img/map.png' width="60%"><br>
 
 #### C++ Files
 ##### Version 1
@@ -28,8 +29,7 @@ In order to add optimization to the mapping and localization steps, I have rewri
 
 In this approach, there is no scale because all the 3D coordinate of the objects are based on the first frame and then all the pose recovered based on the first frame, so we can skip the step to estimate scale, but no optimization is used in this version and I run the program for 2000 frames, and below is the output trajectory of came in these 2000 frames
 
-<img src='img/map2.png' width="80%">
-<!--![](img/map2.png)-->
+<img src='img/map2.png' width="60%">
 
 ##### Version 2
 In the **C++** version 2, I added bundle adjustment to perform optimization in the backend and I choose to use the graph optimization package **g2o** for bundle adjustment. In order to install  **g2o** in you machine, you have to refer [this](https://github.com/RainerKuemmerle/g2o) for additional information. The basic idea is to optimize both the pose and 3D landmark and minimize the reprojection error between these 3D points, 2D feature points with recovered poses. In my implementation, the world 3D points-landmarks are stored and each frame only observe a subset of 3D points from these 3D points, and 3D landmark points keeps adding when new frame comes. 
