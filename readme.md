@@ -36,8 +36,8 @@ In the **C++** version 2, I added bundle adjustment to perform optimization in t
 
 You can choose to run it online way or offline way. In the offline way, you have to wait until all the frames has been processed and optimize all batches with one shot. Of course, it is slow because the 3D landmark points keep accumulating and there are many landmarks to optimize, so it is slow. As for the online approach, you can choose to optimize only several frames together and continuing the processing for the other frames. I used the offline processing for 2000 frames, since it is not very complex model. For the image below, you can see that trajectories optimized with **bundle adjustment** is more closely aligned with the ground truth trajectory, so it means optimization works.
 
-<img src='img/map2_359.png' width="48%">
-<img src='img/map2_360.png' width="48%">
+<img src='img/map2_359.png' width="60%">
+<img src='img/map2_360.png' width="60%">
 
 Notice that the trajectories are very sensitive to matching points, so be careful to choose the good matching points int the feature extraction stage. In the left plot, the matching points are OK but with deviation from ground truth path. In the right plot, I used a different matching parameter and now the trajectory is much better.
 
