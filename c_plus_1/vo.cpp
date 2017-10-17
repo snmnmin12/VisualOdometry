@@ -109,14 +109,6 @@ void VO::extract_keypoints_surf(const Mat& img1, const Mat& img2, vector<Point3f
 	// waitKey(0);
 }
 
-// Mat getRightImage(const string& raw_path, int i) {
-
-// 	char path[50];
-// 	// sprintf(path, "/Users/HJK-BD//Downloads/kitti/00/image_1/%06d.png", i);
-// 	sprintf(path, raw_path, i);
-// 	return imread(path);
-// }
-
 
 void VO::create_new_features(int start, const Mat& inv_transform, std::vector<Point2f>& featurePoints, std::vector<Point3f>& landmarks)  const{
 
@@ -178,10 +170,9 @@ void tracking(const cv::Mat& ref_img, const cv::Mat& curImg, const std::vector<P
 
 void VO::playSequence(const std::vector<std::vector<float>>& poses) const {
 
-
-
-	Mat left_img = getImage(left_image_path, 0);
-	Mat right_img = getImage(right_image_path,0);
+    int startIndex = 0;
+	Mat left_img = getImage(left_image_path, startIndex);
+	Mat right_img = getImage(right_image_path,startIndex);
 	Mat& ref_img  = left_img;
 
 	vector<Point3f> landmarks;
@@ -199,7 +190,7 @@ void VO::playSequence(const std::vector<std::vector<float>>& poses) const {
 
 	Mat traj = Mat::zeros(600, 600, CV_8UC3);
 
-	for(int i = 1; i < max_frame; i++) {
+	for(int i = startIndex + 1; i < max_frame; i++) {
 
 		cout << i << endl;
 
@@ -210,6 +201,8 @@ void VO::playSequence(const std::vector<std::vector<float>>& poses) const {
 
 		tracking(ref_img, curImg, featurePoints, landmarks, landmarks_ref, featurePoints_ref);
 
+		if (landmarks_ref.size() == 0) continue;
+
 		Mat dist_coeffs = Mat::zeros(4,1,CV_64F);
 
 		Mat rvec, tvec;
@@ -217,6 +210,12 @@ void VO::playSequence(const std::vector<std::vector<float>>& poses) const {
 		vector<int> inliers;
 
 		solvePnPRansac(landmarks_ref, featurePoints_ref, K, dist_coeffs,rvec, tvec,false, 100, 8.0, 0.99, inliers);// inliers);
+
+		if (inliers.size() < 5) continue;
+
+		float inliers_ratio = inliers.size()/float(landmarks_ref.size());
+
+		cout << "inliers ratio: " << inliers_ratio << endl;
 
 
 		Mat R_matrix;
@@ -233,11 +232,9 @@ void VO::playSequence(const std::vector<std::vector<float>>& poses) const {
 		t_vec.copyTo(inv_transform.col(3));
 
 
-		float inliers_ratio = inliers.size()/float(landmarks_ref.size());
-
-		cout << "inliers ratio: " << inliers_ratio << endl;
-
-		create_new_features(i, inv_transform, featurePoints, landmarks);
+		// if (inliers_ratio < 0.9) {
+			create_new_features(i, inv_transform, featurePoints, landmarks);
+		// }
 
 
 		ref_img = curImg;
@@ -264,6 +261,7 @@ void VO::playSequence(const std::vector<std::vector<float>>& poses) const {
 
 	}
 	// imshow( "Trajectory", traj);
+	imwrite("map2.png", traj);
 	waitKey(0);
 
 }
@@ -305,7 +303,11 @@ std::vector<vector<float>> VO::get_Pose(const std::string& path) {
 
 Mat VO::getImage(const string& raw_path, int i) {
 	char path[50];
-	// sprintf(path, "/Users/HJK-BD//Downloads/kitti/00/image_0/%06d.png", i);
 	sprintf(path, raw_path.c_str(), i);
-	return imread(path);
+	Mat img = imread(path);
+    if(! img.data )                              // Check for invalid input
+    {
+        cout <<  "Could not open or find the image" << std::endl ;
+    }
+    return img;
 }

@@ -4,8 +4,20 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
+	 if (argc != 4)
+    {
+        cout<<"Usage: ba_example max_frame, bundle"<<endl;
+        exit(1);
+    } 
+
+    int max_frame= atoi(argv[1]);
+    int opt_frame = atoi(argv[2]);
+    bool flag = atoi(argv[3]);
+
+    // std::cout << flag << std::endl;
+
 	//you have to configure your own path
-	string left_path = "/Users/HJK-BD/Downloads/kitti/00/image_0/%06d.png";
+	string left_path =  "/Users/HJK-BD/Downloads/kitti/00/image_0/%06d.png";
 	string right_path = "/Users/HJK-BD/Downloads/kitti/00/image_1/%06d.png";
 	string pose_path = "/Users/HJK-BD/Downloads/kitti/poses/00.txt";
 
@@ -18,7 +30,9 @@ int main(int argc, char** argv) {
 	VO vo(K, baseline, left_path, right_path);
 
 	//we have only 1000 paris of pictures
-	vo.set_Max_frame(1000);
+	vo.set_Max_frame(max_frame);
+	vo.set_optimized_frame(opt_frame);
+	vo.setBundle(flag);
 
 	//This is to get the ground truethe pose data
 	vector<vector<float>> poses = VO::get_Pose(pose_path);
